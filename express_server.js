@@ -3,9 +3,10 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
-function generateRandomString(input = 6) {
+function generateRandomString() {
+  let input = 6;
   let characters = '123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
-  let temp = []
+  let temp = [];
   for (let i = 0; i < input; i++) {
     let random = Math.floor(Math.random()*(characters.length))+ 1
   temp.push(characters[random])
@@ -51,8 +52,16 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");         
+  let longUrl = req.body.longURL;
+  let shortUrl = generateRandomString()
+  urlDatabase[shortUrl] = longUrl
+  res.redirect(longUrl);         
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  console.log('Label', req.params.shortURL)
+  const longURL = urlDatabase[req.params.shortURL]
+  console.log('Label2', longURL)
+  res.redirect(longURL);
+});
 
