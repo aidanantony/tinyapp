@@ -72,3 +72,19 @@ app.post("/urls/:shortURL/delete", (req,res) => {
   res.redirect("/urls")
 })
 
+app.get("/urls/:id/edit", (req,res) => {
+  const shortUrl = req.params.id
+  const templateVar = {shortURL: shortUrl, longURL: urlDatabase[shortUrl]}
+  console.log(shortUrl)
+  res.render("urls_show", templateVar)
+})
+
+app.post("/urls/:id", (req,res) => {
+  const shortUrl = req.params.id
+  const userInput = req.body.longURL
+  urlDatabase[shortUrl] = userInput
+  console.log('label', userInput)
+  console.log(shortUrl)
+  console.log(urlDatabase)
+  res.redirect("/urls")
+})
