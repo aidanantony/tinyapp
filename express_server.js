@@ -15,6 +15,15 @@ function generateRandomString() {
   }
   return temp.join('')
 }
+
+const emailLookup = function (email) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return true;
+    }
+  }
+  return false;
+}
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -122,15 +131,29 @@ app.get("/register", (req,res) => {
 })
 
 app.post("/register", (req,res) => {
-  let randomId = generateRandomString()
-  console.log(randomId)
-  users[randomId] = {
-    id: randomId,
-    email: req.body.email,
-    password: req.body.password
+  if (req.body.email === "") {
+    res.statusCode = 400
+    res.send("<h1>Error! Please ensure both the email and password sections are properly filled.</h1>")
   }
+  if (req.body.password === "") {
+    res.statusCode = 400
+    res.send("<h1>Error! Please ensure both the email and password sections are properly filled.</h1>")
+  }
+  const user = emailLookup(req.body.email)
+  console.log(user)
+  if (user === true) {
+    res.statusCode = 400
+    res.send("<h1>Sorry! An account with this email is already in use.</h1>")
+  }
+    let randomId = generateRandomString()
+    console.log(randomId)
+    users[randomId] = {
+      id: randomId,
+      email: req.body.email,
+      password: req.body.password
+    }
   console.log(users)
   res.cookie("user_id", randomId)
   res.redirect("/urls")
-})
+  })
 
