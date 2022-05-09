@@ -157,3 +157,8 @@ app.post("/register", (req,res) => {
   res.redirect("/urls")
   })
 
+  app.get("/login", (req,res) => {
+    let templateVars = {user: users[req.cookies['user_id']]}
+    res.render("urls_login", templateVars)
+  })
+
