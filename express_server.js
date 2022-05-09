@@ -37,7 +37,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username:req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user:users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
 
@@ -50,7 +50,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVar = {username: req.cookies["username"]}
+  let templateVar = {user: users[req.cookies["user_id"]]}
   res.render("urls_new", templateVar);
 });
 
@@ -90,7 +90,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 app.get("/urls/:id/edit", (req,res) => {
   const shortUrl = req.params.id
-  const templateVar = {shortURL: shortUrl, longURL: urlDatabase[shortUrl], username: req.cookies.username}
+  const templateVar = {shortURL: shortUrl, longURL: urlDatabase[shortUrl], user: users[req.cookies["user_id"]]}
   console.log(shortUrl)
   console.log("templateVar:", templateVar)
   res.render("urls_show", templateVar)
@@ -117,7 +117,7 @@ app.post("/logout", (req,res) => {
 })
 
 app.get("/register", (req,res) => {
-  const templateVars = {username: req.cookies['username']}
+  const templateVars = {user: users[req.cookies['user_id']]}
   res.render("urls_register", templateVars)
 })
 
