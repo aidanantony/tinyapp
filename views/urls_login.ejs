@@ -11,17 +11,17 @@
 <body> 
 <%- include('partials/_header') %>
 <main style="margin: 1em;">
-  <h3> Welcome back! Login here</h3> 
+  <h3> Welcome! Login here</h3> 
 <form action="/login" method="POST">
   <div>
     <label for="email">email</label>
-    <input type="text" id="email" name="email">
+    <input type="text" id="email" name="email" placeholder="Enter email">
   </div>
   <div>
     <label for="password">password</label>
-    <input type="text" id="password" name="password">
+    <input type="text" id="password" name="password" placeholder="Enter password">
   </div>
-  <button type="Submit">Login</button>
+  <button type="Submit" class="btn btn-primary">Login</button>
 </form>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

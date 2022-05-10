@@ -11,21 +11,17 @@
 <body> 
 <%- include('partials/_header') %>
 <main style="margin: 1em;">
-  <h3> Please fill in the fields to register!</h3> 
+  <h3> Create Account</h3> 
   <form action="/register" method= "Post">
     <div>
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name">
-    </div>
-    <div>
       <label for="email">Email</label>
-      <input type="text" id="email" name="email">
+      <input type="text" id="email" name="email" placeholder="Enter email">
     </div>
     <div>
       <label for="password">Password</label>
-      <input type="text" id="password" name="password">
+      <input type="text" id="password" name="password" placeholder="Enter password">
     </div>
-    <button type="submit">Register</button>
+    <button type="submit" class="btn btn-primary">Register</button>
   </form>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
