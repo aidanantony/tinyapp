@@ -84,15 +84,12 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log('Label', req.params.shortURL)
   const longURL = urlDatabase[req.params.shortURL]
-  console.log('Label2', longURL)
   res.redirect(longURL);
 });
 
 app.post("/urls/:shortURL/delete", (req,res) => {
   const shortURL = req.params.shortURL
-  console.log('label', req.params.shortURL)
   delete urlDatabase[shortURL]
   res.redirect("/urls")
 })
@@ -109,16 +106,11 @@ app.post("/urls/:id", (req,res) => {
   const shortUrl = req.params.id
   const userInput = req.body.longURL
   urlDatabase[shortUrl] = userInput
-  console.log('label', userInput)
-  console.log(shortUrl)
-  console.log(urlDatabase)
   res.redirect("/urls")
 })
 
 app.post("/login", (req,res) => {
   let user = emailLookup(req.body.email)
-  console.log("user", user)
-  console.log("req.body", req.body)
   if(!user) {
     res.statusCode = 403;
     res.send("<h1>Error 403. Email not in system</h1>")
@@ -155,7 +147,6 @@ app.post("/register", (req,res) => {
     res.send("<h1>Sorry! An account with this email is already in use.</h1>")
   } else {
     let randomId = generateRandomString()
-    console.log(randomId)
     users[randomId] = {
       id: randomId,
       email: req.body.email,
