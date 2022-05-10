@@ -19,10 +19,10 @@ function generateRandomString() {
 const emailLookup = function (email) {
   for (let user in users) {
     if (users[user].email === email) {
-      return true;
+      return users[user];
     }
   }
-  return false;
+  return undefined;
 }
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -116,12 +116,23 @@ app.post("/urls/:id", (req,res) => {
 })
 
 app.post("/login", (req,res) => {
-  res.cookie("username", req.body['username'])
+  let user = emailLookup(req.body.email)
+  console.log("user", user)
+  console.log("req.body", req.body)
+  if(!user) {
+    res.statusCode = 403;
+    res.send("<h1>Error 403. Email not in system</h1>")
+  } else if(req.body.password !== user.password) {
+      res.statusCode = 403;
+      res.send("<h1>Error 403. Incorrect Credentials</h1>")
+    } else {
+  res.cookie("user_id", user.id)
   res.redirect("/urls")
+    }
 })
 
 app.post("/logout", (req,res) => {
-  res.clearCookie("username")
+  res.clearCookie("user_id")
   res.redirect("/urls")
 })
 
@@ -135,16 +146,14 @@ app.post("/register", (req,res) => {
     res.statusCode = 400
     res.send("<h1>Error! Please ensure both the email and password sections are properly filled.</h1>")
   }
-  if (req.body.password === "") {
+  else if (req.body.password === "") {
     res.statusCode = 400
     res.send("<h1>Error! Please ensure both the email and password sections are properly filled.</h1>")
   }
-  const user = emailLookup(req.body.email)
-  console.log(user)
-  if (user === true) {
+  else if (emailLookup(req.body.email)) {
     res.statusCode = 400
     res.send("<h1>Sorry! An account with this email is already in use.</h1>")
-  }
+  } else {
     let randomId = generateRandomString()
     console.log(randomId)
     users[randomId] = {
@@ -152,9 +161,10 @@ app.post("/register", (req,res) => {
       email: req.body.email,
       password: req.body.password
     }
-  console.log(users)
+    console.log(users)
   res.cookie("user_id", randomId)
   res.redirect("/urls")
+  }
   })
 
   app.get("/login", (req,res) => {
