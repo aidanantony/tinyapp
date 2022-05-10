@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser')
+const bcrypt = require("bcryptjs")
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 app.use(cookieParser())
@@ -43,6 +44,7 @@ const users = {
 }
 
 const bodyParser = require("body-parser");
+const bcryptjs = require("bcryptjs");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/urls", (req, res) => {
@@ -118,12 +120,12 @@ app.post("/login", (req,res) => {
   if(!user) {
     res.statusCode = 403;
     res.send("<h1>Error 403. Email not in system</h1>")
-  } else if(req.body.password !== user.password) {
+  } else if(bcrypt.compareSync(req.body.password, user.password)) {
+    res.cookie("user_id", user.id)
+    res.redirect("/urls")
+  } else {
       res.statusCode = 403;
       res.send("<h1>Error 403. Incorrect Credentials</h1>")
-    } else {
-  res.cookie("user_id", user.id)
-  res.redirect("/urls")
     }
 })
 
@@ -154,8 +156,10 @@ app.post("/register", (req,res) => {
     users[randomId] = {
       id: randomId,
       email: req.body.email,
-      password: req.body.password
+      password: bcrypt.hashSync(req.body.password, 10)
     }
+    const hashedPassword = bcrypt.hashSync(users[randomId].password, 10)
+    console.log("label", hashedPassword)
     console.log(users)
   res.cookie("user_id", randomId)
   res.redirect("/urls")
