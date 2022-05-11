@@ -11,6 +11,9 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
+//Requiring the helper functions from helper.js
+const { getUserByEmail } = require("./helper")
+
 function generateRandomString() {
   let input = 6;
   let characters = '123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
@@ -20,15 +23,6 @@ function generateRandomString() {
   temp.push(characters[random])
   }
   return temp.join('')
-}
-
-const emailLookup = function (email) {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-  return undefined;
 }
 
 const urlsForUser = function(id) {
@@ -41,6 +35,7 @@ const urlsForUser = function(id) {
 return matches
 }
 
+//The Databse that URLs are stored in.
 const urlDatabase = {
   b6UTxQ: {
         longURL: "https://www.tsn.ca",
@@ -150,7 +145,7 @@ app.post("/urls/:id", (req,res) => {
 })
 
 app.post("/login", (req,res) => {
-  let user = emailLookup(req.body.email)
+  let user = getUserByEmail(req.body.email, users)
   if(!user) {
     res.statusCode = 403;
     res.send("<h1>Error 403. Email not in system</h1>")
@@ -183,7 +178,7 @@ app.post("/register", (req,res) => {
     res.statusCode = 400
     res.send("<h1>Error! Please ensure both the email and password sections are properly filled.</h1>")
   }
-  else if (emailLookup(req.body.email)) {
+  else if (getUserByEmail(req.body.email, users)) {
     res.statusCode = 400
     res.send("<h1>Sorry! An account with this email is already in use.</h1>")
   } else {
