@@ -25,7 +25,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 
 ## Instructions for TinyApp
-### The first thing you will want to do is to make an account. Feeatures like making a new Short URL, saving your own short URLs, and editting can only be done with an account. 
+### The first thing you will want to do is to make an account. Features like making a new Short URL, saving your own short URLs, and editting can only be done with an account. 
 - While on the home page, navigate over to the register button on the top of the screen. Upon clicking this button you will be taken to the registration page where you will need to enter your email and create a password. 
 
 ### Making a new short URL
