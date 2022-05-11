@@ -30,9 +30,26 @@ const emailLookup = function (email) {
   }
   return undefined;
 }
+
+const urlsForUser = function(id) {
+  let matches = {}
+  for (let key in urlDatabase) {
+  if(id === urlDatabase[key].userID) {
+    matches[key] = urlDatabase[key].longURL
+  }
+}
+return matches
+}
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+        longURL: "https://www.tsn.ca",
+        userID: "aJ48lW"
+    },
+    i3BoGr: {
+        longURL: "https://www.google.ca",
+        userID: "aJ48lW"
+    }
 };
 
 const users = { 
@@ -53,7 +70,9 @@ const bcryptjs = require("bcryptjs");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user:users[req.session.user_id] };
+  const error = req.session.user_id ? "Please register or login" : null;
+const templateVars = { urls:  urlsForUser(req.session.user_id), user:users[req.session.user_id], 
+    longURL: urlDatabase[req.params.shortURL], shortURL: req.params.shortURL, userId: req.session.user_id , error: error};
   res.render("urls_index", templateVars);
 });
 
@@ -66,7 +85,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVar = {user: users[req.session.user_id]}
+  let templateVar = {user: users[req.session['user_id']]}
   if (req.session.user_id) {
     res.render("urls_new", templateVar);
   } else {
@@ -83,19 +102,31 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL};
+  let error = ''
+  const isExist = urlsForUser(req.session.user_id)
+
+  if(!req.session.user_id) {
+    error = "Please login or register"
+  } else {
+    // user is logged in but URL does not exist
+    if(!isExist[req.params.shortURL]) {
+      error = "You do not have access to this page"
+    }
+  }
+
+  console.log("Testing label", urlDatabase)
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] || null, user: users[req.session.user_id], error: error };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  let longUrl = req.body.longURL;
-  let shortUrl = generateRandomString()
-  urlDatabase[shortUrl] = longUrl
-  res.redirect(longUrl);         
+  let shortURL = generateRandomString()
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session['user_id']}
+  res.redirect(`/urls/${shortURL}`);         
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 });
 
@@ -107,9 +138,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 app.get("/urls/:id/edit", (req,res) => {
   const shortUrl = req.params.id
-  const templateVar = {shortURL: shortUrl, longURL: urlDatabase[shortUrl], user: users[req.session.user_id]}
-  console.log(shortUrl)
-  console.log("templateVar:", templateVar)
+  const templateVar = {shortURL: shortUrl, longURL: urlDatabase[shortUrl].longURL, user: users[req.session.user_id], error: null}
   res.render("urls_show", templateVar)
 })
 
@@ -165,9 +194,7 @@ app.post("/register", (req,res) => {
       password: bcrypt.hashSync(req.body.password, 10)
     }
     const hashedPassword = bcrypt.hashSync(users[randomId].password, 10)
-    console.log("label", hashedPassword)
-    console.log(users)
-  req.session.user_id = users.randomId
+  req.session['user_id'] = randomId
   res.redirect("/urls")
   }
   })
