@@ -67,11 +67,11 @@ app.get("/urls", (req, res) => {
   // const error = req.session.user_id ? "Please register or login" : null;
   const templateVars = { urls:  urlsForUser(req.session.user_id), user:users[req.session.user_id],
     longURL: urlDatabase[req.params.shortURL], shortURL: req.params.shortURL, userId: req.session.user_id };
-    if (req.session.user_id) {
-      res.render("urls_index", templateVars);
-    } else {
-      res.redirect("/login");
-    }
+  if (req.session.user_id) {
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
   
 
