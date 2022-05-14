@@ -61,8 +61,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //The get route for the main page. Has a condition to check if user is logged in. If not user redirected to login
 app.get("/urls", (req, res) => {
-  const templateVars = { urls:  urlsForUser(req.session.user_id), user:users[req.session.user_id],
-    longURL: urlDatabase[req.params.shortURL], shortURL: req.params.shortURL, userId: req.session.user_id };
+  const templateVars = { urls:  urlsForUser(req.session.user_id), user:users[req.session.user_id] };
   if (req.session.user_id) {
     res.render("urls_index", templateVars);
   } else {
@@ -98,18 +97,21 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let error = '';
+  // let error = '';
   const isExist = urlsForUser(req.session.user_id);
   // If user is not loggeed in and tries to reach the edit page of a URL.
   if (!req.session.user_id) {
-    error = "Please login or register";
-  } else {
+    return res.statusCode(401).send('Please login or register')
+  //   error = "Please login or register";
+  } //else {
     // user is logged in but URL does not exist
-    if (!isExist[req.params.shortURL]) {
-      error = "You do not have access to this page";
-    }
+  if (!isExist[req.params.shortURL]) {
+    return res.statusCode(401).send('You do not have access to this page')
+    //   error = "You do not have access to this page";
+    // }
   }
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] || null, user: users[req.session.user_id], error: error };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id]};
+  console.log("longURL", urlDatabase[req.params.shortURL].longURL)
   res.render("urls_show", templateVars);
 });
 
@@ -138,9 +140,16 @@ app.get("/urls/:id/edit", (req,res) => {
 });
 
 app.post("/urls/:id", (req,res) => {
+  if(!req.session.user_id) {
+    return res.statusCode(401).send('You are not authorized')
+  }
+  if(req.body.longURL === '') {
+    return res.statusCode(401).send('Long Url can not be empty')
+  }
   const shortUrl = req.params.id;
   const userInput = req.body.longURL;
-  urlDatabase[shortUrl] = userInput;
+  urlDatabase[shortUrl].longURL = userInput;
+  console.log(userInput)
   res.redirect("/urls");
 });
 //Login page post route. Has checks for if email is not in system or if incorrect password.
