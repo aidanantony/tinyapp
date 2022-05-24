@@ -71,11 +71,7 @@ app.get("/urls", (req, res) => {
   
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  res.send('Welcome!')
 });
 
 //The get route for the Create New Urls page. If not logged in, will redirect user to login page.
@@ -97,18 +93,14 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  // let error = '';
   const isExist = urlsForUser(req.session.user_id);
   // If user is not loggeed in and tries to reach the edit page of a URL.
   if (!req.session.user_id) {
-    return res.statusCode(401).send('Please login or register')
-  //   error = "Please login or register";
-  } //else {
+    return res.status(401).send('Please login or register')
+  } 
     // user is logged in but URL does not exist
   if (!isExist[req.params.shortURL]) {
-    return res.statusCode(401).send('You do not have access to this page')
-    //   error = "You do not have access to this page";
-    // }
+    return res.status(401).send('You do not have access to this page')
   }
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id]};
   console.log("longURL", urlDatabase[req.params.shortURL].longURL)
@@ -203,5 +195,10 @@ app.post("/register", (req,res) => {
 app.get("/login", (req,res) => {
   let templateVars = {user: users[req.session.user_id]};
   res.render("urls_login", templateVars);
+});
+
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });
 
